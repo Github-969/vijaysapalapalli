@@ -1,0 +1,61 @@
+---
+- name: Install and configure Apache
+  hosts: webservers
+  become: yes
+  vars:
+    dbname: accounts
+    dbuser: vprofile
+  tasks:
+    - name: Install httpd
+      ansible.builtin.yum:
+        name: httpd
+        state: present
+
+    - name: Start and enable httpd service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: yes
+
+- name: Install and configure MariaDB
+  hosts: dbservers
+  become: yes
+  vars:
+    dbname: accounts
+    dbuser: vprofile
+  tasks:
+    - debug:
+        var: dbname
+        var: dbuser
+    - name: Install mariadb-server
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+
+    - name: Install pymysql
+      ansible.builtin.yum:
+        name: python3-PyMySQL
+        state: present
+
+    - name: Start and enable mariadb service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create a new database with name 'accounts'
+      community.mysql.mysql_db:
+        name: "{{ dbname }}"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+
+    - name: Create database user with name 'vprofile'
+      community.mysql.mysql_user:
+        name: "{{ dbuser }}"
+        password: 'admin943'
+        priv: '*.*:ALL'
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+      register: dbout
+    - debug:
+        var: dbout    

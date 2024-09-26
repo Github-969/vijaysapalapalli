@@ -1,11 +1,11 @@
 all:
   hosts:
     web01:
-      ansible_host: 98.82.31.84
+      ansible_host: 3.110.94.168
     web02:
-      ansible_host: 98.84.40.11
+      ansible_host: 15.206.172.218
     db01:
-      ansible_host: 44.203.20.50
+      ansible_host: 13.233.216.107
   children:
     webservers:
       hosts:
